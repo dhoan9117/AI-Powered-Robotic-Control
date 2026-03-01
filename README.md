@@ -2,3 +2,4 @@
 
 * Sử dụng CVZone (một thư viện cấp cao xây dựng trên MediaPipe).Bản chất: Tối ưu hóa việc nhận diện trạng thái ngón tay (Fingers Up/Down) cực nhanh để điều khiển các tác vụ Logic như bật/tắt LED hoặc kẹp/nhả vật thể.
 sau đó sử dụng arduino c++ để nhận lên thực thi từ python
+-hạn chế nhận diện chiều sâu chưa tốt với camera thường và mediapie cvzone còn nhiều hạn chế, chưa tìm được phương pháp hiệu quả hơn
