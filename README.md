@@ -3,3 +3,11 @@
 * Sử dụng thư viện  MediaPipe Bản chất: Tối ưu hóa việc nhận diện trạng thái ngón tay (Fingers Up/Down) cực nhanh để điều khiển các tác vụ Logic như bật/tắt LED hoặc kẹp/nhả vật thể.
 sau đó sử dụng arduino c++ để nhận lên thực thi từ python
 -hạn chế nhận diện chiều sâu chưa tốt với camera thường và mediapie cvzone còn nhiều hạn chế, chưa tìm được phương pháp hiệu quả hơn
+
+
+https://github.com/user-attachments/assets/e84b60aa-a839-4ac3-8ea1-952183dd970d
+
+
+https://github.com/user-attachments/assets/8d562a10-c0b2-421c-ad58-4a1f3dc18207
+
+
