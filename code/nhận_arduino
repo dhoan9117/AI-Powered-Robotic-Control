@@ -1,1 +1,52 @@
+#include <Servo.h>
 
+// Khai báo 4 Servo
+Servo servoBase;    // Base (Chân 3)
+Servo servoGrip;    // Gripper (Chân 5)
+Servo servoArm;     // Arm (Chân 6)
+Servo servoWrist;   // Wrist (Chân 9)
+
+void setup() {
+  // Baudrate phải khớp với file Python (115200)
+  Serial.begin(115200);
+
+  // Gán chân điều khiển (khớp với info trong Python của bạn)
+  servoBase.attach(3);
+  servoGrip.attach(5);
+  servoArm.attach(6);
+  servoWrist.attach(9);
+
+  // Vị trí mặc định khi khởi động
+  servoBase.write(90);
+  servoGrip.write(30);
+  servoArm.write(90);
+  servoWrist.write(90);
+
+  Serial.println("Arduino Ready - Waiting for AI Commands...");
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    // Đọc chuỗi dữ liệu đến khi gặp dấu xuống dòng
+    String data = Serial.readStringUntil('\n');
+
+    // Tách dữ liệu bằng dấu phẩy
+    int firstComma = data.indexOf(',');
+    int secondComma = data.indexOf(',', firstComma + 1);
+    int thirdComma = data.indexOf(',', secondComma + 1);
+
+    if (firstComma > 0 && secondComma > 0 && thirdComma > 0) {
+      // Ép kiểu chuỗi sang số nguyên (int)
+      int baseVal = data.substring(0, firstComma).toInt();
+      int gripVal = data.substring(firstComma + 1, secondComma).toInt();
+      int armVal = data.substring(secondComma + 1, thirdComma).toInt();
+      int wristVal = data.substring(thirdComma + 1).toInt();
+
+      // Xuất lệnh điều khiển Servo
+      servoBase.write(baseVal);
+      servoGrip.write(gripVal);
+      servoArm.write(armVal);
+      servoWrist.write(wristVal);
+    }
+  }
+}
