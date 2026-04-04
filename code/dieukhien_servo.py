@@ -70,6 +70,10 @@ while cap.isOpened():
     image = cv2.flip(image, 1)
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
+    # Tối ưu MediaPipe: ngăn không cho MediaPipe sao chép buffer ảnh
+    # Bằng cách truyền tham chiếu, ta tránh được 2 lần copy ảnh mỗi frame
+    image_rgb.flags.writeable = False
+
     # =========================================================
     # 1. CHẠY MODEL POSE (Dáng) -> Điều khiển BASE (3) & ARM (6)
     # =========================================================
@@ -104,6 +108,9 @@ while cap.isOpened():
     # 2. CHẠY MODEL HANDS (Tay) -> Điều khiển GRIP (5) & WRIST (9)
     # =========================================================
     hand_results = hands.process(image_rgb)
+
+    # Cho phép ghi lại vào ảnh để vẽ sau nếu cần
+    image_rgb.flags.writeable = True
 
     current_gripper = last_gripper
     current_wrist = last_wrist
