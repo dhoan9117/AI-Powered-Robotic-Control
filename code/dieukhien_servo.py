@@ -61,6 +61,7 @@ last_base = 90
 last_arm = 90
 last_wrist = 90
 last_gripper = 30
+last_cmd = ""
 
 while cap.isOpened():
     success, image = cap.read()
@@ -69,6 +70,10 @@ while cap.isOpened():
     # Xử lý ảnh
     image = cv2.flip(image, 1)
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    # ⚡ BOLT OPTIMIZATION: Prevent MediaPipe from copying the image array.
+    # By default, MediaPipe processes a copy if the array is writeable.
+    # Setting this to False passes it by reference, saving memory allocation and CPU cycles per frame.
+    image_rgb.flags.writeable = False
 
     # =========================================================
     # 1. CHẠY MODEL POSE (Dáng) -> Điều khiển BASE (3) & ARM (6)
@@ -164,8 +169,10 @@ while cap.isOpened():
     # 3. GỬI DỮ LIỆU
     # =========================================================
     cmd = f"{current_base},{current_gripper},{current_arm},{current_wrist}\n"
-    if arduino and arduino.is_open:
+    # ⚡ BOLT OPTIMIZATION: Prevent PySerial buffer flooding by only sending data when state changes
+    if arduino and arduino.is_open and cmd != last_cmd:
         arduino.write(cmd.encode())
+        last_cmd = cmd
 
     # Hiển thị
     info1 = f"Base(3): {current_base} | Arm(6): {current_arm}"
