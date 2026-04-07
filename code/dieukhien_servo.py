@@ -70,6 +70,13 @@ while cap.isOpened():
     image = cv2.flip(image, 1)
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
+    # ⚡ TỐI ƯU HIỆU NĂNG (Bolt):
+    # Đánh dấu mảng numpy là chỉ đọc (read-only) để MediaPipe bỏ qua bước
+    # tạo bản sao (deep copy) của ảnh bên trong hàm process().
+    # Do chúng ta chạy 2 model (Pose và Hands) liên tiếp trên cùng 1 ảnh,
+    # việc này giúp tiết kiệm bộ nhớ và tăng FPS đáng kể.
+    image_rgb.flags.writeable = False
+
     # =========================================================
     # 1. CHẠY MODEL POSE (Dáng) -> Điều khiển BASE (3) & ARM (6)
     # =========================================================
