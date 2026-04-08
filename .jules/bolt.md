@@ -1,0 +1,3 @@
+## 2024-04-08 - MediaPipe Memory Copies in Dual-Tier Logic
+**Learning:** In "Dual-Tier Logic" where an image is processed sequentially by two separate MediaPipe models (`pose` and `hands`) on the same frame, MediaPipe implicitly copies the image memory twice by default if `writeable` is True. In Python bindings, NumPy arrays mapped from OpenCV retain their `writeable=True` state, triggering `cv::Mat` cloning inside the C++ backend before inference.
+**Action:** When passing a frame to `process()`, explicitly set `image.flags.writeable = False` first to force passing the image array by reference.
