@@ -121,20 +121,17 @@ while cap.isOpened():
             lm = hand_lm.landmark
 
             # --- A. XỬ LÝ KẸP (Đếm ngón) ---
-            fingers = []
+            # ⚡ Bolt Optimization: Replaced temporary list allocation and .count() with a simple integer counter.
+            # This avoids creating/destroying a list every frame, reducing memory allocation overhead and GC pauses.
+            # Impact: Slightly faster frame processing and lower memory churn.
+            count = 0
             # Ngón cái (X) - Dùng biến lm thay vì hand_lm
             if lm[4].x > lm[3].x:
-                fingers.append(1)
-            else:
-                fingers.append(0)
+                count += 1
             # 4 ngón kia (Y)
             for id in [8, 12, 16, 20]:
                 if lm[id].y < lm[id - 2].y:
-                    fingers.append(1)
-                else:
-                    fingers.append(0)
-
-            count = fingers.count(1)
+                    count += 1
 
             if count <= 1:
                 raw_gripper = 110  # ĐÓNG
