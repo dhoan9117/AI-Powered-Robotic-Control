@@ -1,0 +1,3 @@
+## 2024-05-24 - Optimizing Memory Allocation in MediaPipe Real-Time Loops
+**Learning:** In performance-critical real-time video processing loops (like those running MediaPipe at 30+ FPS), using aggregate list operations (e.g., `fingers = []`, appending elements, and then calling `fingers.count()`) introduces significant memory allocation and garbage collection overhead. Since this code evaluates state continuously per frame, replacing lists with simple scalar accumulators (`count += 1`) drastically reduces memory churn.
+**Action:** Always replace temporary arrays used purely for counting or state aggregation with simple scalar variables within real-time CV/hardware control loops to ensure consistent frame rates and lower latency.
