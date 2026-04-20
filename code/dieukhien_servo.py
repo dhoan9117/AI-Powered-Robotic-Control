@@ -73,6 +73,9 @@ while cap.isOpened():
     # =========================================================
     # 1. CHẠY MODEL POSE (Dáng) -> Điều khiển BASE (3) & ARM (6)
     # =========================================================
+    # ⚡ Bolt Optimization: Disable writeable flag to pass image by reference
+    # instead of copying it to MediaPipe's backend, improving real-time FPS.
+    image_rgb.flags.writeable = False
     pose_results = pose.process(image_rgb)
 
     current_base = last_base
@@ -104,6 +107,9 @@ while cap.isOpened():
     # 2. CHẠY MODEL HANDS (Tay) -> Điều khiển GRIP (5) & WRIST (9)
     # =========================================================
     hand_results = hands.process(image_rgb)
+
+    # Re-enable writeable flag for any subsequent operations if needed
+    image_rgb.flags.writeable = True
 
     current_gripper = last_gripper
     current_wrist = last_wrist

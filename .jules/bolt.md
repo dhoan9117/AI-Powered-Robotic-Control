@@ -1,0 +1,3 @@
+## 2024-05-14 - MediaPipe Writeable Flag Pass-By-Reference Optimization
+**Learning:** By default, OpenCV image arrays passed to MediaPipe's `.process()` method are passed by value and copied to MediaPipe's backend, which creates a large memory allocation and copying overhead on every frame, reducing real-time processing FPS.
+**Action:** When calling MediaPipe processing methods in performance-critical or real-time loops, always set `image.flags.writeable = False` to enforce pass-by-reference and then re-enable it `image.flags.writeable = True` immediately after if further processing or drawing (like `cv2.putText` or `mp_drawing`) is required on that frame.
