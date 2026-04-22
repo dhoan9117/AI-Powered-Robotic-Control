@@ -1,0 +1,3 @@
+## 2024-05-18 - MediaPipe Writeable Flags
+**Learning:** By default, when calling MediaPipe `.process(image)`, MediaPipe creates a deep copy of the image payload internally. This allocates ~900KB memory per call for a typical 640x480 RGB image.
+**Action:** Always set `image.flags.writeable = False` before calling `.process()`. This lets MediaPipe process the payload by reference, preventing unnecessary deep copies and reducing latency and memory allocations in hot paths like realtime video processing pipelines.

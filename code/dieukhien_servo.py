@@ -70,6 +70,10 @@ while cap.isOpened():
     image = cv2.flip(image, 1)
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
+    # ⚡ OPTIMIZATION: Pass by reference instead of copying
+    # Prevents MediaPipe from creating internal image copies, saving ~900KB per process() call
+    image_rgb.flags.writeable = False
+
     # =========================================================
     # 1. CHẠY MODEL POSE (Dáng) -> Điều khiển BASE (3) & ARM (6)
     # =========================================================
@@ -159,6 +163,8 @@ while cap.isOpened():
 
             current_wrist = smooth_wrist.update(raw_wrist)
             last_wrist = current_wrist
+
+    image_rgb.flags.writeable = True
 
     # =========================================================
     # 3. GỬI DỮ LIỆU
