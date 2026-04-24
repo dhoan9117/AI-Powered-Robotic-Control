@@ -70,6 +70,10 @@ while cap.isOpened():
     image = cv2.flip(image, 1)
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
+    # Tối ưu hiệu năng: Đánh dấu ảnh là không thể ghi để MediaPipe xử lý qua tham chiếu (pass-by-reference)
+    # Giám chi phí phân bổ bộ nhớ mỗi khung hình (Memory allocation overhead)
+    image_rgb.flags.writeable = False
+
     # =========================================================
     # 1. CHẠY MODEL POSE (Dáng) -> Điều khiển BASE (3) & ARM (6)
     # =========================================================
@@ -104,6 +108,9 @@ while cap.isOpened():
     # 2. CHẠY MODEL HANDS (Tay) -> Điều khiển GRIP (5) & WRIST (9)
     # =========================================================
     hand_results = hands.process(image_rgb)
+
+    # Trả lại trạng thái có thể ghi nếu cần xử lý tiếp ảnh gốc
+    image_rgb.flags.writeable = True
 
     current_gripper = last_gripper
     current_wrist = last_wrist
