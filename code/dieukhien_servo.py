@@ -8,8 +8,8 @@ import math
 try:
     arduino = serial.Serial(port='COM5', baudrate=115200, timeout=.1)
     print("✅ Đã kết nối Arduino - Chế độ 2 SOLUTION SONG SONG!")
-except:
-    print("❌ Lỗi COM! Chạy giả lập.")
+except Exception as e:
+    print(f"❌ Lỗi COM! Chạy giả lập. Chi tiết: {e}")
     arduino = None
 
 # --- KHỞI TẠO 2 MODEL RIÊNG BIỆT ---
@@ -70,6 +70,9 @@ while cap.isOpened():
     image = cv2.flip(image, 1)
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
+    # ⚡ Bolt: Prevent unnecessary image copying inside MediaPipe
+    image_rgb.flags.writeable = False
+
     # =========================================================
     # 1. CHẠY MODEL POSE (Dáng) -> Điều khiển BASE (3) & ARM (6)
     # =========================================================
@@ -105,6 +108,9 @@ while cap.isOpened():
     # =========================================================
     hand_results = hands.process(image_rgb)
 
+    # ⚡ Bolt: Re-enable writeability for OpenCV drawing
+    image_rgb.flags.writeable = True
+
     current_gripper = last_gripper
     current_wrist = last_wrist
 
@@ -121,20 +127,16 @@ while cap.isOpened():
             lm = hand_lm.landmark
 
             # --- A. XỬ LÝ KẸP (Đếm ngón) ---
-            fingers = []
+            # ⚡ Bolt: Removed temporary 'fingers' list and .count() for a simple integer counter
+            count = 0
             # Ngón cái (X) - Dùng biến lm thay vì hand_lm
             if lm[4].x > lm[3].x:
-                fingers.append(1)
-            else:
-                fingers.append(0)
+                count += 1
+
             # 4 ngón kia (Y)
             for id in [8, 12, 16, 20]:
                 if lm[id].y < lm[id - 2].y:
-                    fingers.append(1)
-                else:
-                    fingers.append(0)
-
-            count = fingers.count(1)
+                    count += 1
 
             if count <= 1:
                 raw_gripper = 110  # ĐÓNG
