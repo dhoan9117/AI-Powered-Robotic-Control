@@ -70,6 +70,10 @@ while cap.isOpened():
     image = cv2.flip(image, 1)
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
+    # ⚡ Bolt Optimization: Pass-by-reference to avoid image copy overhead in MediaPipe
+    # Impact: Reduces memory allocation and speeds up real-time vision processing
+    image_rgb.flags.writeable = False
+
     # =========================================================
     # 1. CHẠY MODEL POSE (Dáng) -> Điều khiển BASE (3) & ARM (6)
     # =========================================================
@@ -163,6 +167,9 @@ while cap.isOpened():
     # =========================================================
     # 3. GỬI DỮ LIỆU
     # =========================================================
+
+    image_rgb.flags.writeable = True # Restore writeable state
+
     cmd = f"{current_base},{current_gripper},{current_arm},{current_wrist}\n"
     if arduino and arduino.is_open:
         arduino.write(cmd.encode())
