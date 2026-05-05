@@ -1,0 +1,3 @@
+## 2024-05-24 - Delta-Based Write Optimization for Serial I/O
+**Learning:** In performance-critical loops (such as real-time video processing), repeatedly writing unchanged commands to a serial connection introduces unnecessary overhead. By using a command tracking variable (`last_cmd`), we can skip the `.write()` call unless the command string has actually changed.
+**Action:** When implementing command-delta optimizations for hardware communication, ensure that tracking variables (like `last_cmd`) are conditionally updated only when the hardware is actually available (`is_open`) and the write is successfully executed.
