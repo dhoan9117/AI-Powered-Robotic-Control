@@ -62,6 +62,9 @@ last_arm = 90
 last_wrist = 90
 last_gripper = 30
 
+# ⚡ BOLT: Track last sent command for delta-based writes
+last_sent_cmd = None
+
 while cap.isOpened():
     success, image = cap.read()
     if not success: continue
@@ -165,7 +168,13 @@ while cap.isOpened():
     # =========================================================
     cmd = f"{current_base},{current_gripper},{current_arm},{current_wrist}\n"
     if arduino and arduino.is_open:
-        arduino.write(cmd.encode())
+        # ⚡ BOLT: Only write to Serial if the command has changed to reduce I/O overhead
+        if cmd != last_sent_cmd:
+            try:
+                arduino.write(cmd.encode())
+                last_sent_cmd = cmd
+            except Exception as e:
+                print(f"Serial write error: {e}")
 
     # Hiển thị
     info1 = f"Base(3): {current_base} | Arm(6): {current_arm}"
