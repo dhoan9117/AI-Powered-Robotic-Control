@@ -61,6 +61,7 @@ last_base = 90
 last_arm = 90
 last_wrist = 90
 last_gripper = 30
+last_sent_cmd = None  # ⚡ BOLT OPTIMIZATION: Track last sent command
 
 while cap.isOpened():
     success, image = cap.read()
@@ -163,9 +164,15 @@ while cap.isOpened():
     # =========================================================
     # 3. GỬI DỮ LIỆU
     # =========================================================
+    # ⚡ BOLT OPTIMIZATION: Delta-based writes to reduce Serial I/O overhead
     cmd = f"{current_base},{current_gripper},{current_arm},{current_wrist}\n"
     if arduino and arduino.is_open:
-        arduino.write(cmd.encode())
+        if cmd != last_sent_cmd:
+            try:
+                arduino.write(cmd.encode())
+                last_sent_cmd = cmd
+            except Exception as e:
+                print(f"Lỗi ghi Serial: {e}")
 
     # Hiển thị
     info1 = f"Base(3): {current_base} | Arm(6): {current_arm}"
