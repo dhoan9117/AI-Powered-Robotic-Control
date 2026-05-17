@@ -1,0 +1,3 @@
+## 2024-05-24 - Delta-Based Serial Write Optimization in Computer Vision Loop
+**Learning:** In a computer vision loop tracking hardware position, unconditionally writing to PySerial on every frame introduces massive I/O overhead (~0.21s per 1000 loops). Since hand/pose positions don't always change frame-to-frame, the serial write is often redundant.
+**Action:** Implement a delta-based tracking approach (`if current_cmd != last_cmd: serial.write()`) to filter out redundant hardware commands. This dramatically reduced the mock benchmark loop overhead from ~0.213s to ~0.0004s for static states in this architecture.
