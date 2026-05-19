@@ -61,6 +61,8 @@ last_base = 90
 last_arm = 90
 last_wrist = 90
 last_gripper = 30
+# Optimal: Track previous command to reduce Serial I/O overhead
+last_cmd = ""
 
 while cap.isOpened():
     success, image = cap.read()
@@ -165,7 +167,13 @@ while cap.isOpened():
     # =========================================================
     cmd = f"{current_base},{current_gripper},{current_arm},{current_wrist}\n"
     if arduino and arduino.is_open:
-        arduino.write(cmd.encode())
+        # Performance Optimization: Delta-based Serial Writes
+        # Instead of writing to the serial port on every frame (~30fps),
+        # we only write when the servo position command actually changes.
+        # This prevents flooding the Arduino with redundant data and reduces I/O blocking time.
+        if cmd != last_cmd:
+            arduino.write(cmd.encode())
+            last_cmd = cmd
 
     # Hiển thị
     info1 = f"Base(3): {current_base} | Arm(6): {current_arm}"
