@@ -1,0 +1,3 @@
+## 2025-05-25 - Serial I/O Optimization Pattern in Control Loops
+**Learning:** In real-time computer vision control loops (like in `dieukhien_servo.py`), unconditionally writing to `serial.Serial.write()` on every frame iteration causes significant performance overhead (blocking I/O) and can overwhelm the embedded hardware's (Arduino) receive buffer, even if the state hasn't changed.
+**Action:** When implementing or reviewing continuous hardware communication loops, always use a command-delta tracking pattern (`last_cmd`). Only transmit data when the calculated control string differs from the previously sent command to minimize I/O blocking and improve loop frequency.
