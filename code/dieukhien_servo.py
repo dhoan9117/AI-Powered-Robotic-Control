@@ -8,7 +8,7 @@ import math
 try:
     arduino = serial.Serial(port='COM5', baudrate=115200, timeout=.1)
     print("✅ Đã kết nối Arduino - Chế độ 2 SOLUTION SONG SONG!")
-except:
+except Exception as e:
     print("❌ Lỗi COM! Chạy giả lập.")
     arduino = None
 
@@ -61,6 +61,7 @@ last_base = 90
 last_arm = 90
 last_wrist = 90
 last_gripper = 30
+last_cmd = ""
 
 while cap.isOpened():
     success, image = cap.read()
@@ -165,7 +166,11 @@ while cap.isOpened():
     # =========================================================
     cmd = f"{current_base},{current_gripper},{current_arm},{current_wrist}\n"
     if arduino and arduino.is_open:
-        arduino.write(cmd.encode())
+        # Performance Optimization: Only send command via Serial if it has changed.
+        # This prevents flooding the Arduino buffer and reduces I/O overhead.
+        if cmd != last_cmd:
+            arduino.write(cmd.encode())
+            last_cmd = cmd
 
     # Hiển thị
     info1 = f"Base(3): {current_base} | Arm(6): {current_arm}"
