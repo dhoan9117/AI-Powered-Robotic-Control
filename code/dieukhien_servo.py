@@ -61,6 +61,7 @@ last_base = 90
 last_arm = 90
 last_wrist = 90
 last_gripper = 30
+last_cmd = None
 
 while cap.isOpened():
     success, image = cap.read()
@@ -164,8 +165,12 @@ while cap.isOpened():
     # 3. GỬI DỮ LIỆU
     # =========================================================
     cmd = f"{current_base},{current_gripper},{current_arm},{current_wrist}\n"
+    # ⚡ Bolt Optimization: Delta-based writes to reduce Serial I/O overhead.
+    # Only send command to Arduino if it differs from the last sent command.
     if arduino and arduino.is_open:
-        arduino.write(cmd.encode())
+        if cmd != last_cmd:
+            arduino.write(cmd.encode())
+            last_cmd = cmd
 
     # Hiển thị
     info1 = f"Base(3): {current_base} | Arm(6): {current_arm}"
