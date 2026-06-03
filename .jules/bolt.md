@@ -1,0 +1,3 @@
+## 2024-05-24 - Serial I/O Bottleneck Optimization
+**Learning:** In real-time computer vision hardware control loops (like `dieukhien_servo.py`), writing to the serial port on every frame unconditionally creates a severe I/O bottleneck. Python loop execution is much faster than standard serial baud rates (e.g., 115200 bps), leading to buffer saturation, microcontroller lag, and delayed mechanical responses.
+**Action:** Always implement a delta-based caching mechanism (`last_sent_cmd`) when pushing state to hardware. Only call `arduino.write()` when the exact command payload changes, dramatically reducing unnecessary I/O blocking.
