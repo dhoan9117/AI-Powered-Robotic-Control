@@ -61,6 +61,7 @@ last_base = 90
 last_arm = 90
 last_wrist = 90
 last_gripper = 30
+last_cmd = b""
 
 while cap.isOpened():
     success, image = cap.read()
@@ -163,9 +164,11 @@ while cap.isOpened():
     # =========================================================
     # 3. GỬI DỮ LIỆU
     # =========================================================
-    cmd = f"{current_base},{current_gripper},{current_arm},{current_wrist}\n"
-    if arduino and arduino.is_open:
-        arduino.write(cmd.encode())
+    cmd = f"{current_base},{current_gripper},{current_arm},{current_wrist}\n".encode()
+    if arduino and arduino.is_open and cmd != last_cmd:
+        # ⚡ Bolt: Optimize performance by skipping redundant serial writes
+        arduino.write(cmd)
+        last_cmd = cmd
 
     # Hiển thị
     info1 = f"Base(3): {current_base} | Arm(6): {current_arm}"
