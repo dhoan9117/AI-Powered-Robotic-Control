@@ -1,0 +1,3 @@
+## 2024-05-24 - Hardware Delta Optimization
+**Learning:** Writing redundantly to a slow Serial port within a fast camera-processing hot loop causes severe I/O bottlenecks and latency. By default, `cv2.VideoCapture` processes frames much faster than the serial port can handle constant identical writes, leading to buffer overflow or loop blocking.
+**Action:** Always implement state tracking (`last_cmd`) when communicating with external hardware in a loop. Only write the data if it has changed from the previous state. This trivial check reduces loop execution overhead dramatically (e.g., from ~0.24s to ~0.0004s) during idle states.
