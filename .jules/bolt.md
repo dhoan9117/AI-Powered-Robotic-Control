@@ -1,0 +1,3 @@
+## 2024-06-12 - Overhead of Unconditional Serial Writes
+**Learning:** Sending data over a serial connection unconditionally on every iteration of a fast control loop introduces significant I/O overhead, even when the command string has not changed. This can block the main loop and reduce the framerate of computer vision processing.
+**Action:** Implement a delta-based write pattern by tracking the `last_sent_cmd` state and only calling `arduino.write()` when the current command differs from the previous one, ensuring to update the tracking variable only upon a successful write when hardware is available.
