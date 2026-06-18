@@ -1,0 +1,3 @@
+## 2024-06-18 - Optimized Hardware Serial Communication
+**Learning:** In robotics control loops like `code/dieukhien_servo.py`, sending identical data constantly over Serial (e.g., `arduino.write(cmd.encode())` every frame) creates significant I/O overhead and can choke the Arduino's buffer. The Exponential Moving Average (`Smoother`) already limits large jumps, meaning many frames generate identical command strings.
+**Action:** Implementing a delta-based write pattern (tracking `last_sent_cmd` and only writing when `cmd != last_sent_cmd`) dramatically reduces unnecessary Serial calls, improving the main loop performance without affecting the robot's physical behavior.
