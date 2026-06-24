@@ -61,6 +61,7 @@ last_base = 90
 last_arm = 90
 last_wrist = 90
 last_gripper = 30
+last_cmd = ""
 
 while cap.isOpened():
     success, image = cap.read()
@@ -165,7 +166,10 @@ while cap.isOpened():
     # =========================================================
     cmd = f"{current_base},{current_gripper},{current_arm},{current_wrist}\n"
     if arduino and arduino.is_open:
-        arduino.write(cmd.encode())
+        # Optimize: Reduce serial I/O overhead by sending delta only
+        if cmd != last_cmd:
+            arduino.write(cmd.encode())
+            last_cmd = cmd
 
     # Hiển thị
     info1 = f"Base(3): {current_base} | Arm(6): {current_arm}"
