@@ -1,0 +1,3 @@
+## 2024-06-25 - Performance Optimization for Serial I/O
+**Learning:** `arduino.write()` is a blocking, slow I/O operation. In a high-frequency video processing loop (e.g., 30fps), unconditionally writing to the serial port even when the data hasn't changed causes unnecessary I/O overhead and can choke the serial buffer on the Arduino side, leading to latency and jitter in physical control.
+**Action:** Implement delta-based writes: keep track of the `last_cmd` sent, and only call `arduino.write()` if the current `cmd` differs from `last_cmd`. This drastically reduces the number of serial writes, saving CPU cycles and serial bandwidth.
