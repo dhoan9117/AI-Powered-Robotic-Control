@@ -57,5 +57,5 @@ while True:
         break
 
 cap.release()
-arduino.close()  # Giải phóng cổng COM
+if 'arduino' in locals(): arduino.close()  # Giải phóng cổng COM
 cv2.destroyAllWindows()
